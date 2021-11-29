@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import shimmer_api.nodes.shimmer_publisher
+
+shimmer_api.nodes.shimmer_publisher.publish_emg()
