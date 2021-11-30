@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- Set environmental variable to separate output from different shimmers -->
+  <env name="ROSCONSOLE_FORMAT"
+    value="[${severity}] [${time}] [${node}]: ${message}"/>
   <!-- start first node and load parameters -->
   <arg name="num" default="1"/> 
   <group ns="$(eval 'shimmer' + str(arg('num')-1))">

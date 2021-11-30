@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root version="2.3.8">
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab tab_name="Raw_EMG" containers="1">
+   <Container>
+    <DockSplitter count="4" sizes="0.250336;0.254374;0.246299;0.248991" orientation="-">
+     <DockArea name="Shim_4C87 - Channel 1">
+      <plot mode="TimeSeries" style="Lines">
+       <range left="0.000000" bottom="14.936819" right="33.167969" top="15.258207"/>
+       <limitY/>
+       <curve name="/shimmer0/emg_stream/emg_ch1" color="#47f852"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Shim_4C87 - Channel 2">
+      <plot mode="TimeSeries" style="Lines">
+       <range left="0.000000" bottom="15.096143" right="33.167969" top="15.417001"/>
+       <limitY/>
+       <curve name="/shimmer0/emg_stream/emg_ch2" color="#47f852"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Shim_4C91 - Channel 1">
+      <plot mode="TimeSeries" style="Lines">
+       <range left="0.002543" bottom="16.038631" right="33.166606" top="16.360449"/>
+       <limitY/>
+       <curve name="/shimmer1/emg_stream/emg_ch1" color="#ffa40e"/>
+      </plot>
+     </DockArea>
+     <DockArea name="Shim_4C91 - Channel 1">
+      <plot mode="TimeSeries" style="Lines">
+       <range left="0.002543" bottom="16.036682" right="33.166606" top="16.360595"/>
+       <limitY/>
+       <curve name="/shimmer1/emg_stream/emg_ch2" color="#ffa40e"/>
+      </plot>
+     </DockArea>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="0"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default time_axis=""/>
+  </plugin>
+  <plugin ID="DataLoad ROS bags">
+   <use_header_stamp value="false"/>
+   <use_renaming_rules value="true"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS Topic Subscriber">
+   <use_header_stamp value="true"/>
+   <use_renaming_rules value="true"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="CSV Exporter" status="idle"/>
+  <plugin ID="ROS /rosout Visualization" status="idle"/>
+  <plugin ID="ROS Topic Re-Publisher" status="idle"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+

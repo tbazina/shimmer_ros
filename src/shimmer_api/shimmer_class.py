@@ -147,8 +147,8 @@ class ShimmerCaptureEMG():
     self.ser = serial.Serial(
       port=self.port,
       baudrate=115200,
-      timeout=10.0,
-      write_timeout=10.0,
+      timeout=5.0,
+      write_timeout=5.0,
       )
     rospy.loginfo(f'Port {self.port} opened: {self.ser.is_open}')
     self.ser.reset_input_buffer()
@@ -251,7 +251,6 @@ class ShimmerCaptureEMG():
   
   def get_charge_status_led(self, echo=False):
     """Read and print charge status LED"""
-    # TODO: TEST for YELLOW and RED
     if self.ser.is_open:
       # send get charge status led command
       self.ser.write(struct.pack(
@@ -358,7 +357,6 @@ class ShimmerCaptureEMG():
     return self.emg_data_rate
   
   def get_emg_registers(self, chip_num=0, echo=False):
-    #TODO: set first bit on CH1SET and CH2SET on chip 2 to 1 (disable chip 2)
     """Get byte values for all 10 registers for chip_num on EMG unit"""
     if chip_num not in [0, 1]:
       sys.exit('Wrong chip number specified. Must be 0 or 1')
@@ -574,20 +572,31 @@ class ShimmerCaptureEMG():
     emg_data.header.frame_id = shimmer_name
     # Iterator
     sig_iter = 0
-    # Send start streaming command and set starting time
-    time_start = rospy.Time.now()
+    # Send start streaming command
     self.send_streaming_command('start', echo=True)
+    # Sleep for 0.5 sec before data acquisition to make sure clock ticks are
+    # sufficiently large
+    rospy.sleep(0.5)
     try:
       while not rospy.is_shutdown():
         data = self.ser.read(size=framesize)
         if data[0] == self.packet_type['DATA_PACKET']:
           # Convert bytes to internal clock_ticks
           clock_ticks = int.from_bytes(data[1:4], 'little')
+          # Resync with ROS time or handle clock_tick overflow
+          # after after 3 bytes max uint - 16777215
+          # max time: 511.9999 sec or 8.5333 min
+          # (exploit OR evaluating only first condition if True)
+          if sig_iter == 0 or clock_ticks <= clock_ticks_ref:
+            # Set starting time
+            time_start = rospy.Time.now()
+            # Set now clock ticks to zero reference
+            clock_ticks_ref = clock_ticks
           # Convert to duration in secs and nsecs
-          duration = rospy.Duration.from_sec(clock_ticks / clock_step)
+          duration = rospy.Duration.from_sec(
+            (clock_ticks - clock_ticks_ref) / clock_step
+            )
           emg_data.header.stamp = time_start + duration
-          # TODO: take care of overflow after 3 bytes max int - 8388607
-          # TODO: max time: 255.9999 sec or 4.2666666 min
           # Convert chip 1, channel 1 and 2 data to integer values 
           c1ch1 = int.from_bytes(data[5:8], byteorder='big', signed=True)
           c1ch2 = int.from_bytes(data[8:11], byteorder='big', signed=True)
@@ -607,13 +616,13 @@ class ShimmerCaptureEMG():
       # Send stop streaming command
       self.send_streaming_command('stop', echo=True)
       # Necessary to wait a bit before flushing input 
-      time.sleep(0.1)
+      rospy.sleep(0.1)
       self.ser.reset_input_buffer()
       raise rospy.ROSInterruptException
     # Send stop streaming command
     self.send_streaming_command('stop', echo=True)
     # Necessary to wait a bit before flushing input 
-    time.sleep(0.1)
+    rospy.sleep(0.1)
     self.ser.reset_input_buffer()
     return 
   
@@ -679,13 +688,13 @@ class ShimmerCaptureEMG():
       # Send stop streaming command
       self.send_streaming_command('stop', echo=echo)
       # Necessary to wait a bit before flushing input 
-      time.sleep(0.1)
+      rospy.sleep(0.2)
       self.ser.reset_input_buffer()
       raise rospy.ROSInterruptException
     # Send stop streaming command
     self.send_streaming_command('stop', echo=echo)
     # Necessary to wait a bit before flushing input 
-    time.sleep(0.1)
+    rospy.sleep(0.2)
     self.ser.reset_input_buffer()
     # Retain only values with amplitude near -1 and 1
     c1ch1 = [i for i in c1ch1_q if abs(abs(i) - 1) < 0.1]
