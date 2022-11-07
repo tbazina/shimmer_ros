@@ -50,6 +50,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   Emg.msg
+  Fft.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -160,6 +161,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/shimmer_publisher
+  scripts/emg_fft_filter
+  scripts/emg_rectify_smooth
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

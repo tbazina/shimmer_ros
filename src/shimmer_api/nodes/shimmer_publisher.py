@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-## Simple talker demo that published std_msgs/Strings messages
-## to the 'chatter' topic
+## Configure and capture EMG signal from Shimmer3 device.
+## Stream acquired emg signal from both channels to the topic emg_stream.
 
 import rospy
 import sys
@@ -30,13 +30,13 @@ def publish_emg():
     )
   try:
     # Get shimmer parameters
-    serial_port = f"/dev/rfcomm{rospy.get_param('~rfcomm_port')}"
-    gain = rospy.get_param('~gain')
-    emg_data_rate = rospy.get_param('~emg_data_rate', 1) # Hz
-    sampling_rate = rospy.get_param('~sampling_rate', 50) # Hz
-    stream_test_signal = rospy.get_param('~stream_test_signal', False)
-    calibrate_test_signal = rospy.get_param('~calibrate_test_signal')
-    queue_size = rospy.get_param('~queue_size', 10)
+    serial_port = f"/dev/rfcomm{rospy.get_param('rfcomm_port')}"
+    gain = rospy.get_param('gain')
+    emg_data_rate = rospy.get_param('emg_data_rate', 1) # Hz
+    sampling_rate = rospy.get_param('sampling_rate', 50) # Hz
+    stream_test_signal = rospy.get_param('stream_test_signal', False)
+    calibrate_test_signal = rospy.get_param('calibrate_test_signal')
+    queue_size = rospy.get_param('queue_size', 10)
     # Initialize publisher with queue size
     pub = rospy.Publisher('emg_stream', Emg, queue_size=queue_size)
     # Initialize Shimmer

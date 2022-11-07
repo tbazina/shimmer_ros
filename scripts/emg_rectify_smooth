@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import emg_process.nodes.emg_rectify_smooth
+
+emg_process.nodes.emg_rectify_smooth.rectify_smooth_republish_emg()

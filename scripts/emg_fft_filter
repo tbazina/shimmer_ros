@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import emg_process.nodes.emg_fft_filter
+
+emg_process.nodes.emg_fft_filter.filter_republish_emg()
