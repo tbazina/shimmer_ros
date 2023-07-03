@@ -1,26 +1,33 @@
 # Window size for filtering (as s fraction of sampling_rate)
 window_size_relative: 0.5
 # Window size for smoothing (sec) - recommended between 0.05 and 0.5 sec
-window_size_smoothing: 0.3
+# Optimal window size - 376 (0.37866 s)
+window_size_smoothing: 0.37866
 # Republished topic with filtered EMG - queue size
 repub_queue_size: 10
 # Clean signal republished topic - queue size
 clean_queue_size: 1000
 # Band-stop frequencies (Hz) - a list of low.high ranges [[low, high][low, high]]
-band_stop: [[48, 53]]
+band_stop: [[414.3, 414.5], [472.3, 472.5]]
 # band_stop: []
 # High pass filter cutoff frequency (Hz), null for None
-hpf_cutoff: 10
+hpf_cutoff: 4.01
 # Low pass filter cutoff frequency (Hz), null for None
-lpf_cutoff: 450
+lpf_cutoff: 413
+# Custom FFT mask multiplier (amplitudes multiplied with factor) 
+# [[low, high, multiplier], [low, high, multiplier], ...]
+fft_mask: [
+  [49.9, 50.1, 0.40], [120.0, 120.3, 2.52], [124.0, 124.3, 2.93], [136.0, 136.3, 3.74],
+  [176.0, 176.3, 5.00]
+  ]
 # Rectify EMG signal after filtering (absolute value)
 rectify: true
 # Smoothing algorithm (rms - root mean square, ema - exponential moving average, false - none)
-smoothing: 'rms'
+smoothing: 'ema'
 # Exponential moving average decreasing factor (0 - 1),
 # 0 - simple moving average
 # Recommendation to use values < 0.01 (older values will have too low weights otherwise) 
-ema_decay: 0.002
+ema_decay: 1.0026e-9
 # FFT Thresholding - relative value to keep only FFT values larger or equal to 
 # fft_threshold * max(fft_magnitude)
-fft_threshold: 0.0
+# fft_threshold: 0.0

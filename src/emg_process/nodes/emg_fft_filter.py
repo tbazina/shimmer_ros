@@ -11,7 +11,7 @@ from shimmer_ros.msg import Fft, Emg
 class EMGFFTFilter():
   def __init__(
     self, window_size_relative, queue_size, sampling_rate, hpf_cutoff,
-    lpf_cutoff, band_stop, fft_threshold
+    lpf_cutoff, band_stop, fft_mask, fft_threshold
     ) -> None:
     # Window size, sampling rate and filtering frequencies
     self.window_size_relative = window_size_relative
@@ -22,6 +22,7 @@ class EMGFFTFilter():
     self.hpf_cutoff = hpf_cutoff
     self.lpf_cutoff = lpf_cutoff
     self.band_stop = band_stop
+    self.fft_mask = fft_mask
     self.fft_threshold = fft_threshold
     # Initialize publishers with queue size
     self.fft_pub = rospy.Publisher(
@@ -71,6 +72,10 @@ class EMGFFTFilter():
     for band in self.band_stop:
       emg_ch1_fft[np.logical_and(freqs >= band[0], freqs <= band[1])] = 0
       emg_ch2_fft[np.logical_and(freqs >= band[0], freqs <= band[1])] = 0
+    # Multiply frequency ranges with custom provided multiplier
+    for mask in self.fft_mask:
+      emg_ch1_fft[np.logical_and(freqs >= mask[0], freqs <= mask[1])] *= mask[2]
+      emg_ch2_fft[np.logical_and(freqs >= mask[0], freqs <= mask[1])] *= mask[2]
     # FFT thresholding with magnitude
     if self.fft_threshold:
       emg_ch1_fft_abs = np.abs(emg_ch1_fft)
@@ -128,6 +133,8 @@ def filter_republish_emg() -> None:
     rospy.loginfo(f'Low pass cutoff frequency: {lpf_cutoff}')
     band_stop = rospy.get_param('band_stop', list())
     rospy.loginfo(f'Band stop frequencies: {band_stop}')
+    fft_mask = rospy.get_param('fft_mask', list())
+    rospy.loginfo(f'FFT custom mask frequencies and multipliers: {fft_mask}')
     fft_threshold = rospy.get_param('fft_threshold', 0)
     rospy.loginfo(f'FFT relative threshold: {fft_threshold}')
     emg_fft = EMGFFTFilter(
@@ -137,6 +144,7 @@ def filter_republish_emg() -> None:
       hpf_cutoff=hpf_cutoff,
       lpf_cutoff=lpf_cutoff,
       band_stop=band_stop,
+      fft_mask=fft_mask,
       fft_threshold=fft_threshold
       )
     subscriber = rospy.Subscriber(

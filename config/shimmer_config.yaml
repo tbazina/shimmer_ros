@@ -3,7 +3,7 @@ gain: 12
 # Internal chip data rate. Must be > than sampling rate
 # emg_data_rate: 125 # Hz
 # Shimmer sampling rate
-sampling_rate: 993 # Hz
+sampling_rate: 992.96969699 # Hz
 # Stream 1 Hz sqare wave with +-1 amplitude test signal instead of acquired
 stream_test_signal: False
 # Calibrate ADC offset using test signal before data acquisition 
